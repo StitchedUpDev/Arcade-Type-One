@@ -1,0 +1,53 @@
+[gd_scene load_steps=10 format=3 uid="uid://by6mj0d82vo33"]
+
+[ext_resource type="PackedScene" uid="uid://tknjp205lavg" path="res://Scenes/health_component.tscn" id="1_topph"]
+[ext_resource type="PackedScene" uid="uid://te6nvaav1ply" path="res://Scenes/hitbox_component.tscn" id="2_obx23"]
+[ext_resource type="PackedScene" uid="uid://du22eiti7i82y" path="res://Scenes/hurtbox_component.tscn" id="3_i45fe"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cmaxv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_byrwq"]
+next_pass = SubResource("StandardMaterial3D_cmaxv")
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_60syt"]
+material = SubResource("StandardMaterial3D_byrwq")
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_07a2n"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8a5rs"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5q33w"]
+
+[node name="Enemy" type="RigidBody3D"]
+disable_mode = 1
+collision_layer = 4
+collision_mask = 5
+lock_rotation = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_60syt")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_07a2n")
+
+[node name="HealthComponent" parent="." instance=ExtResource("1_topph")]
+
+[node name="HitboxComponent" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("2_obx23")]
+collision_layer = 4
+collision_mask = 2
+monitoring = false
+health_component = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HitboxComponent"]
+shape = SubResource("CapsuleShape3D_8a5rs")
+
+[node name="HurtboxComponent" parent="." instance=ExtResource("3_i45fe")]
+collision_layer = 4
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent"]
+shape = SubResource("CapsuleShape3D_5q33w")
+
+[connection signal="area_entered" from="HurtboxComponent" to="HealthComponent" method="_on_hurtbox_component_area_entered"]
